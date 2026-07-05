@@ -1,0 +1,206 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460" fill="none">
+  <defs>
+    <clipPath id="roundCorners"><rect width="1200" height="460" rx="16" ry="16"/></clipPath>
+  </defs>
+  <g clip-path="url(#roundCorners)">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700&amp;family=DM+Mono:wght@400;500&amp;display=swap');
+      .dash-flow { animation: dashFlow 2s linear infinite; }
+      @keyframes dashFlow { to { stroke-dashoffset: -20; } }
+    </style>
+    <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="10" cy="10" r="0.5" fill="#C0C0C0"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="460" fill="#F7F7F7"/>
+  <rect width="1200" height="460" fill="url(#dots)"/>
+
+  <!-- ─────────── TITLE ─────────── -->
+  <text x="60" y="80" font-family="'DM Sans', Helvetica, Arial, sans-serif" font-size="42" font-weight="700" fill="#0A0A0A" letter-spacing="-1.5">MMI Algorithms</text>
+  <text x="63" y="108" font-family="'DM Mono', 'Courier New', monospace" font-size="14" fill="#555" letter-spacing="0.3">Binary-tree probing for malicious smart-meter detection</text>
+  <rect x="63" y="120" width="44" height="3" rx="1.5" fill="#0A0A0A"/>
+
+  <!-- ─────────── LEFT: INSPECTION TREE ─────────── -->
+  <text x="60" y="148" font-family="'DM Mono', 'Courier New', monospace" font-size="13" fill="#555" font-weight="500" letter-spacing="1.2">INSPECTION TREE — n = 512 (8 LEAVES SHOWN)</text>
+
+  <!-- edges -->
+  <g stroke="#0A0A0A" stroke-width="1.2" opacity="0.18">
+    <line x1="310" y1="170" x2="185" y2="225"/>
+    <line x1="310" y1="170" x2="435" y2="225"/>
+    <line x1="185" y1="225" x2="122.5" y2="280"/>
+    <line x1="185" y1="225" x2="247.5" y2="280"/>
+    <line x1="435" y1="225" x2="372.5" y2="280"/>
+    <line x1="435" y1="225" x2="497.5" y2="280"/>
+    <line x1="122.5" y1="280" x2="91.25" y2="345"/>
+    <line x1="122.5" y1="280" x2="153.75" y2="345"/>
+    <line x1="247.5" y1="280" x2="216.25" y2="345"/>
+    <line x1="247.5" y1="280" x2="278.75" y2="345"/>
+    <line x1="372.5" y1="280" x2="341.25" y2="345"/>
+    <line x1="372.5" y1="280" x2="403.75" y2="345"/>
+    <line x1="497.5" y1="280" x2="466.25" y2="345"/>
+    <line x1="497.5" y1="280" x2="528.75" y2="345"/>
+  </g>
+
+  <!-- probe path highlight (root -> dirty leaf) -->
+  <path id="probePath" d="M310,170 L185,225 L247.5,280 L216.25,345" stroke="#0A0A0A" stroke-width="1.6" opacity="0.35" stroke-dasharray="4 5" class="dash-flow"/>
+
+  <!-- internal nodes -->
+  <g fill="white" stroke="#0A0A0A" stroke-width="1.5">
+    <circle cx="310" cy="170" r="7"/>
+    <circle cx="185" cy="225" r="6"/>
+    <circle cx="435" cy="225" r="6"/>
+    <circle cx="122.5" cy="280" r="5"/>
+    <circle cx="247.5" cy="280" r="5"/>
+    <circle cx="372.5" cy="280" r="5"/>
+    <circle cx="497.5" cy="280" r="5"/>
+  </g>
+
+  <!-- pulsing rings along the probe path -->
+  <circle cx="310" cy="170" r="7" fill="none" stroke="#0A0A0A" stroke-width="1">
+    <animate attributeName="r" values="7;16;7" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.3;0;0.3" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="185" cy="225" r="6" fill="none" stroke="#0A0A0A" stroke-width="1">
+    <animate attributeName="r" values="6;14;6" dur="3s" repeatCount="indefinite" begin="0.6s"/>
+    <animate attributeName="opacity" values="0.3;0;0.3" dur="3s" repeatCount="indefinite" begin="0.6s"/>
+  </circle>
+  <circle cx="247.5" cy="280" r="5" fill="none" stroke="#0A0A0A" stroke-width="1">
+    <animate attributeName="r" values="5;13;5" dur="3s" repeatCount="indefinite" begin="1.2s"/>
+    <animate attributeName="opacity" values="0.3;0;0.3" dur="3s" repeatCount="indefinite" begin="1.2s"/>
+  </circle>
+  <circle cx="216.25" cy="345" r="8" fill="none" stroke="#0A0A0A" stroke-width="1">
+    <animate attributeName="r" values="8;18;8" dur="3s" repeatCount="indefinite" begin="1.8s"/>
+    <animate attributeName="opacity" values="0.4;0;0.4" dur="3s" repeatCount="indefinite" begin="1.8s"/>
+  </circle>
+
+  <!-- traveling probe particle -->
+  <circle r="4" fill="#0A0A0A">
+    <animateMotion dur="3s" repeatCount="indefinite" path="M310,170 L185,225 L247.5,280 L216.25,345"/>
+    <animate attributeName="opacity" values="1;1;1;0" dur="3s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- leaves: clean (outline) vs dirty (filled) -->
+  <g stroke="#0A0A0A" stroke-width="1.5">
+    <circle cx="91.25" cy="345" r="8" fill="white"/>
+    <circle cx="153.75" cy="345" r="8" fill="white"/>
+    <circle cx="216.25" cy="345" r="8" fill="#0A0A0A"/>
+    <circle cx="278.75" cy="345" r="8" fill="white"/>
+    <circle cx="341.25" cy="345" r="8" fill="white"/>
+    <circle cx="403.75" cy="345" r="8" fill="#0A0A0A"/>
+    <circle cx="466.25" cy="345" r="8" fill="white"/>
+    <circle cx="528.75" cy="345" r="8" fill="white"/>
+  </g>
+
+  <!-- legend -->
+  <g font-family="'DM Mono', 'Courier New', monospace" font-size="12.5" fill="#666">
+    <circle cx="65" cy="368" r="6" fill="#0A0A0A"/>
+    <text x="78" y="372">dirty (malicious)</text>
+    <circle cx="215" cy="368" r="6" fill="white" stroke="#0A0A0A" stroke-width="1.5"/>
+    <text x="228" y="372">clean</text>
+  </g>
+
+  <!-- ─────────── RIGHT: PROBES vs DIRTY RATIO CHART ─────────── -->
+  <text x="565" y="62" font-family="'DM Mono', 'Courier New', monospace" font-size="13" fill="#555" font-weight="500" letter-spacing="1.2">PROBES N_S vs DIRTY RATIO γ (n = 512)</text>
+
+  <!-- Y axis -->
+  <text x="558" y="101" text-anchor="end" font-family="'DM Mono', 'Courier New', monospace" font-size="13" fill="#777">1023</text>
+  <text x="558" y="161" text-anchor="end" font-family="'DM Mono', 'Courier New', monospace" font-size="13" fill="#777">768</text>
+  <text x="558" y="221" text-anchor="end" font-family="'DM Mono', 'Courier New', monospace" font-size="13" fill="#777">512</text>
+  <text x="558" y="281" text-anchor="end" font-family="'DM Mono', 'Courier New', monospace" font-size="13" fill="#777">256</text>
+  <text x="558" y="341" text-anchor="end" font-family="'DM Mono', 'Courier New', monospace" font-size="13" fill="#777">0</text>
+
+  <!-- grid -->
+  <g stroke="#DCDCDC" stroke-width="0.5">
+    <line x1="565" y1="97" x2="1120" y2="97"/>
+    <line x1="565" y1="157" x2="1120" y2="157"/>
+    <line x1="565" y1="217" x2="1120" y2="217"/>
+    <line x1="565" y1="277" x2="1120" y2="277"/>
+    <line x1="565" y1="337" x2="1120" y2="337"/>
+  </g>
+
+  <!-- x axis ticks -->
+  <g font-family="'DM Mono', 'Courier New', monospace" font-size="12.5" fill="#777">
+    <text x="565" y="352">0</text>
+    <text x="700" y="352" text-anchor="middle">.25</text>
+    <text x="842.5" y="352" text-anchor="middle">.5</text>
+    <text x="985" y="352" text-anchor="middle">.75</text>
+    <text x="1120" y="352" text-anchor="end">1.0</text>
+  </g>
+
+  <!-- crossover guide -->
+  <line x1="693" y1="97" x2="693" y2="337" stroke="#0A0A0A" stroke-width="1" stroke-dasharray="3 3" opacity="0.2"/>
+  <text x="700" y="90" font-family="'DM Mono', 'Courier New', monospace" font-size="12" fill="#555">γ≈0.2 crossover</text>
+
+  <!-- Scanning: thin dashed, flat -->
+  <path d="M565,224 C650,222 750,220 850,218 S1000,215 1120,213" stroke="#0A0A0A" stroke-width="1.3" opacity="0.32" stroke-dasharray="1000" stroke-dashoffset="1000" fill="none">
+    <animate attributeName="stroke-dashoffset" values="1000;0" dur="1.8s" begin="0.4s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1"/>
+  </path>
+
+  <!-- BI_v2: solid mid-weight -->
+  <path d="M565,332 C620,320 660,280 693,217 S780,140 900,110 S1050,98 1120,97" stroke="#0A0A0A" stroke-width="1.6" opacity="0.55" stroke-dasharray="1000" stroke-dashoffset="1000" fill="none">
+    <animate attributeName="stroke-dashoffset" values="1000;0" dur="1.8s" begin="0.8s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1"/>
+  </path>
+
+  <!-- ATI: bold black, adaptive envelope -->
+  <path d="M565,332 C620,320 660,280 693,217 S800,213 900,211 S1050,210 1120,210" stroke="#0A0A0A" stroke-width="2.8" opacity="1" stroke-dasharray="1000" stroke-dashoffset="1000" fill="none">
+    <animate attributeName="stroke-dashoffset" values="1000;0" dur="1.8s" begin="1.2s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1"/>
+  </path>
+
+  <!-- end labels -->
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;0;1" dur="3.2s" fill="freeze"/>
+    <circle cx="1120" cy="97" r="3" fill="#0A0A0A" opacity="0.55"/>
+    <text x="1108" y="88" text-anchor="end" font-family="'DM Mono', 'Courier New', monospace" font-size="13" fill="#555">1023 worst case</text>
+    <circle cx="1120" cy="210" r="3" fill="#0A0A0A"/>
+    <text x="1108" y="200" text-anchor="end" font-family="'DM Mono', 'Courier New', monospace" font-size="13" fill="#0A0A0A" font-weight="500">≈543 ATI</text>
+    <circle cx="1120" cy="213" r="2.5" fill="#0A0A0A" opacity="0.32"/>
+    <text x="1108" y="230" text-anchor="end" font-family="'DM Mono', 'Courier New', monospace" font-size="13" fill="#777">≈512 scanning</text>
+  </g>
+
+  <!-- legend -->
+  <g opacity="0" font-family="'DM Mono', 'Courier New', monospace" font-size="12.5" fill="#666">
+    <animate attributeName="opacity" values="0;0;1" dur="3.4s" fill="freeze"/>
+    <line x1="565" y1="367" x2="588" y2="367" stroke="#0A0A0A" stroke-width="1.3" stroke-dasharray="4 3" opacity="0.32"/>
+    <text x="594" y="371">scanning</text>
+    <line x1="700" y1="367" x2="723" y2="367" stroke="#0A0A0A" stroke-width="1.6" opacity="0.55"/>
+    <text x="729" y="371">BI_v2</text>
+    <line x1="815" y1="367" x2="838" y2="367" stroke="#0A0A0A" stroke-width="2.8"/>
+    <text x="844" y="371">ATI (adaptive)</text>
+  </g>
+
+  <!-- ─────────── BOTTOM STATS ─────────── -->
+  <line x1="60" y1="385" x2="1120" y2="385" stroke="#DCDCDC" stroke-width="1"/>
+
+  <g opacity="0"><animate attributeName="opacity" values="0;0;1" dur="2s" fill="freeze" begin="0.3s"/>
+    <text x="60" y="422" font-family="'DM Sans', Helvetica, sans-serif" font-size="26" font-weight="700" fill="#0A0A0A">4</text>
+    <text x="60" y="442" font-family="'DM Mono', 'Courier New', monospace" font-size="13.5" fill="#666">algorithms compared</text>
+  </g>
+  <g opacity="0"><animate attributeName="opacity" values="0;0;1" dur="2s" fill="freeze" begin="0.6s"/>
+    <text x="215" y="422" font-family="'DM Sans', Helvetica, sans-serif" font-size="26" font-weight="700" fill="#0A0A0A">n=512</text>
+    <text x="215" y="442" font-family="'DM Mono', 'Courier New', monospace" font-size="13.5" fill="#666">leaves simulated</text>
+  </g>
+  <g opacity="0"><animate attributeName="opacity" values="0;0;1" dur="2s" fill="freeze" begin="0.9s"/>
+    <text x="400" y="422" font-family="'DM Sans', Helvetica, sans-serif" font-size="26" font-weight="700" fill="#0A0A0A">γ≈0.17–0.23</text>
+    <text x="400" y="442" font-family="'DM Mono', 'Courier New', monospace" font-size="13.5" fill="#666">BI / scanning crossover</text>
+  </g>
+  <g opacity="0"><animate attributeName="opacity" values="0;0;1" dur="2s" fill="freeze" begin="1.2s"/>
+    <text x="640" y="422" font-family="'DM Sans', Helvetica, sans-serif" font-size="26" font-weight="700" fill="#0A0A0A">2n−1</text>
+    <text x="640" y="442" font-family="'DM Mono', 'Courier New', monospace" font-size="13.5" fill="#666">worst-case probes</text>
+  </g>
+  <g opacity="0"><animate attributeName="opacity" values="0;0;1" dur="2s" fill="freeze" begin="1.5s"/>
+    <text x="790" y="422" font-family="'DM Sans', Helvetica, sans-serif" font-size="26" font-weight="700" fill="#0A0A0A">seeded</text>
+    <text x="790" y="442" font-family="'DM Mono', 'Courier New', monospace" font-size="13.5" fill="#666">fully reproducible</text>
+  </g>
+
+  <!-- badges -->
+  <g opacity="0"><animate attributeName="opacity" values="0;0;1" dur="2s" fill="freeze" begin="1.8s"/>
+    <rect x="930" y="408" width="105" height="32" rx="16" fill="#0A0A0A"/>
+    <text x="982.5" y="429" text-anchor="middle" font-family="'DM Mono', 'Courier New', monospace" font-size="12.5" fill="white" font-weight="500">IEEE TSG '13</text>
+    <rect x="1045" y="408" width="105" height="32" rx="16" fill="white" stroke="#0A0A0A" stroke-width="1.5"/>
+    <text x="1097.5" y="429" text-anchor="middle" font-family="'DM Mono', 'Courier New', monospace" font-size="12.5" fill="#0A0A0A" font-weight="500">replication</text>
+  </g>
+  </g>
+</svg>

@@ -1,5 +1,7 @@
 # MMI Algorithms — Replication
 
+![Binary-tree probing for malicious smart-meter detection: an inspection tree simulation and probes-vs-dirty-ratio comparison of scanning, BI_v2, and ATI](workflow.svg)
+
 Replication of the simulation results of:
 
 > Z. Xiao, Y. Xiao, and D. H.-C. Du, "Exploring Malicious Meter Inspection in
