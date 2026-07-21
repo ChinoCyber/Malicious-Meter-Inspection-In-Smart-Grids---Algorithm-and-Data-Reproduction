@@ -5,7 +5,8 @@ import random
 
 from mmi import (assign_dirty, build_inspection_tree, run_dynamic,
                  split_into_rounds, STATIC_ALGOS, DYNAMIC_ALGOS,
-                 scanning, bi_v1, bi_v2)
+                 scanning, bi_v1, bi_v2, PLACEMENTS,
+                 information_lower_bound)
 
 
 def check_tree_structure():
@@ -86,10 +87,33 @@ def check_dynamic():
     print("dynamic driver ok (batches found each round, Table IX accounting)")
 
 
+def check_placements():
+    rng = random.Random(7)
+    for n in (33, 128, 512):
+        tree = build_inspection_tree(range(n), rng)
+        for m in (1, n // 3, n):
+            for name, place in PLACEMENTS.items():
+                ids = place(tree, m, rng, block_size=8)
+                assert len(ids) == len(set(ids)) == m, \
+                    f"{name} produced {len(ids)} ids for m={m}, n={n}"
+                assert all(0 <= i < n for i in ids)
+    # spread really spreads: with m = n/2 every leaf pair holds a dirty meter,
+    # so BI_v1 must probe every internal node (the Lemma 3 worst-case shape)
+    tree = build_inspection_tree(range(64), rng)
+    ids = PLACEMENTS["spread"](tree, 32, rng)
+    assign_dirty(tree, ids)
+    _, steps = bi_v1(tree)
+    assert steps == 2 * 64 - 1, f"spread m=n/2 should force 2n-1, got {steps}"
+    assert information_lower_bound(512, 0) == 0.0
+    assert abs(information_lower_bound(512, 256) - 507.2) < 1.0
+    print("placement models and lower bound ok")
+
+
 if __name__ == "__main__":
     check_tree_structure()
     check_all_algorithms_exact()
     check_scanning_steps()
     check_bi_bounds()
     check_dynamic()
+    check_placements()
     print("ALL CHECKS PASSED")

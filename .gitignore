@@ -1,2 +1,7 @@
 __pycache__/
 *.pyc
+
+# Parameter-stamped simulator run artifacts (reproducible); the canonical
+# paper figures results/fig9|10|11.* are tracked, these ad-hoc runs are not.
+results/sim_*
+results/ati_*

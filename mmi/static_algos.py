@@ -84,7 +84,7 @@ class _AdaptiveInspection:
 
     JUMP_THRESHOLD = 0.13
 
-    def __init__(self, tree):
+    def __init__(self, tree, jump_rule="original", jump_threshold=None):
         self.tree = tree
         self.prober = Prober()
         self.q = []
@@ -92,6 +92,12 @@ class _AdaptiveInspection:
         self.num_dirty = 0
         # per-level aggregates of known subRs: [count, sum, sum of squares]
         self.level_stats = {}
+        # jump policy (see _decide_jump): the defaults reproduce Table V,
+        # the simulator exposes the others to probe how far ATI can be
+        # pushed below scanning at high dirty ratios.
+        self.jump_rule = jump_rule
+        self.jump_threshold = (self.JUMP_THRESHOLD if jump_threshold is None
+                               else jump_threshold)
 
     def run(self):
         self._visit(self.tree.root)
@@ -148,12 +154,30 @@ class _AdaptiveInspection:
         if distance <= 1:
             return 0
         ratio = self._ratio()
-        if ratio < self.JUMP_THRESHOLD:
+        if ratio <= 0.0 or ratio < self.jump_threshold:
             return 0
         similarity = self._similarity(node.level)
-        if not math.isfinite(similarity) or similarity / ratio >= 1.0:
-            return 0
-        depth = math.ceil(distance * (1.0 - similarity / ratio))
+        rule = self.jump_rule
+        if rule == "original":
+            # Table V: jump only when the level looks uniform (S_l < R),
+            # deeper the more uniform it is.  S_l stays high under
+            # clustering, so jumps are suppressed exactly where high-gamma
+            # scenarios need them -> ATI stops beating scanning near g~0.4.
+            if not math.isfinite(similarity) or similarity / ratio >= 1.0:
+                return 0
+            depth = math.ceil(distance * (1.0 - similarity / ratio))
+        elif rule == "dirtiness":
+            # dive toward the leaves in proportion to how dirty we are,
+            # ignoring S_l -> keeps jumping in dense (clustered) regions
+            # and pushes the below-scanning crossover out to g~0.55.
+            depth = math.ceil(distance * ratio)
+        elif rule == "aggressive":
+            # take whichever of the two rules jumps deeper
+            damp = (0.0 if not math.isfinite(similarity)
+                    else max(0.0, 1.0 - similarity / ratio))
+            depth = math.ceil(distance * max(damp, ratio))
+        else:
+            raise ValueError(f"unknown jump_rule {rule!r}")
         return max(1, min(depth, distance))
 
     def _descendants_at(self, node, depth):
@@ -209,8 +233,26 @@ class _AdaptiveInspection:
 
 
 def ati(tree):
-    """Adaptive Tree Inspection (Table V)."""
+    """Adaptive Tree Inspection (Table V), paper-faithful defaults."""
     return _AdaptiveInspection(tree).run()
+
+
+JUMP_RULES = ("original", "dirtiness", "aggressive")
+
+
+def make_ati(jump_rule="original", jump_threshold=None):
+    """Build an ATI algorithm callable with a chosen jump policy.
+
+    `jump_rule` selects how the jump depth D is computed (see
+    `_AdaptiveInspection._decide_jump`); `jump_threshold` overrides the
+    minimum running dirty ratio R below which no jump fires (default
+    0.13, the Lemma-4 value).  `make_ati()` with no arguments is exactly
+    `ati`.  The interactive simulator uses this to explore how far ATI's
+    below-scanning range can be pushed under clustered placements.
+    """
+    def algo(tree):
+        return _AdaptiveInspection(tree, jump_rule, jump_threshold).run()
+    return algo
 
 
 STATIC_ALGOS = {
