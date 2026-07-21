@@ -22,10 +22,15 @@ mmi/
   tree.py          inspection-tree model, PullDown build, probe oracle
   static_algos.py  Scanning, BI_v1 (Table III), BI_v2 (Table IV), ATI (Table V)
   dynamic_algos.py r-round dynamic driver (Sec. V): D-Scanning, DBI_v1/v2, D-ATI
+  placement.py     dirty-meter placement models: uniform / clustered / spread
+  bounds.py        information-theoretic floor log2 C(n, m)
+  plotstyle.py     shared chart styling (CVD-validated palette + markers)
 experiments/
   fig9_static.py   paper Fig. 9  — static, n = 512, 30 repeats
   fig10_dynamic.py paper Fig. 10 — dynamic, n = 128, avg over r = 2..m, 20 tests
   fig11_rounds.py  paper Fig. 11 — dynamic, n = 128, m = 24, r = 2..24
+  replot.py        regenerate the figures from saved CSVs
+simulator.py       interactive simulation lab (tkinter GUI)
 results/           generated PNGs and CSVs
 tests.py           sanity checks against the paper's theorems
 ```
@@ -43,6 +48,52 @@ python experiments/fig11_rounds.py
 Figures and raw data land in `results/`. All experiments are seeded and
 reproducible; in the dynamic experiments all four algorithms are run on
 identical random scenarios.
+
+## Simulation lab
+
+```
+python simulator.py
+```
+
+Opens an interactive environment for reproducing — or contradicting —
+the paper's static results. Configure a scenario and press **Run**:
+
+- **Placement**: uniform random (the paper's stated setup), clustered
+  (dirty meters fill contiguous blocks of leaf positions, block size
+  adjustable), or spread/anti-clustered (near-evenly spaced — the
+  adversarial worst case for tree inspection).
+- **Trials per γ point** and **γ resolution** (step 0.01–0.1).
+- **n**, RNG **seed**, and which algorithms to compare.
+- **ATI jump rule** and **jump threshold**: the jump policy of Table V is
+  underspecified, so the depth rule is selectable. `original` reproduces
+  Table V (default); `dirtiness` sets `D = ceil(R · dist)` — it keeps
+  jumping in dense clustered regions instead of being suppressed by a
+  high similarity `S_l`; `aggressive` takes whichever of the two jumps
+  deeper. Under clustered placement the latter two push ATI's
+  below-scanning crossover out from γ ≈ 0.40 to ≈ 0.55, matching the
+  paper's mid-range dip — a change to the *algorithm*, not just the
+  scenario, so it shifts the exercise from "reproduce as-written" toward
+  "fit the target." The **threshold** is the minimum running dirty ratio
+  `R` below which no jump fires (default 0.13, the Lemma-4 value); it
+  only gates the low-γ end and does not move the high-γ crossover.
+- **log2 C(n, m) floor** overlay: with uniform placement, no correct
+  algorithm can average below this line — any published curve that does
+  is evidence against the stated setup. The floor does not apply to
+  clustered/spread placements (their arrangements carry less entropy).
+
+Each run draws the comparison chart and saves a parameter-stamped
+PNG + CSV pair into `results/` (`sim_<placement>_n<n>_t<trials>_<time>`),
+so scenarios can be compared side by side afterwards.
+`python simulator.py --selftest` runs a headless smoke test.
+
+Findings so far from this environment: with uniform placement the
+paper's mid-range ATI values (≈ 440–500 for γ = 0.35–0.55, n = 512) sit
+*below* the log2 C(n, m) floor of 473–507, which no correct algorithm
+can do; with clustered placement (blocks of ~8) the ATI curve dips
+below scanning through the mid-range and the BI crossovers move to
+γ ≈ 0.37/0.40 — close to the paper's figure. The paper's Fig. 9 is
+therefore consistent with a clustered (non-uniform) dirty-meter
+generator, not with the uniform-random deployment it describes.
 
 ## Interpretation choices
 
